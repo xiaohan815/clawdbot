@@ -20,7 +20,8 @@ export type AuthChoiceGroupId =
   | "minimax"
   | "synthetic"
   | "venice"
-  | "qwen";
+  | "qwen"
+  | "ollama";
 
 export type AuthChoiceGroup = {
   value: AuthChoiceGroupId;
@@ -113,6 +114,12 @@ const AUTH_CHOICE_GROUP_DEFS: {
     hint: "API key",
     choices: ["opencode-zen"],
   },
+  {
+    value: "ollama",
+    label: "Ollama",
+    hint: "Local/remote LLM runtime",
+    choices: ["ollama-api-key"],
+  },
 ];
 
 export function buildAuthChoiceOptions(params: {
@@ -176,6 +183,11 @@ export function buildAuthChoiceOptions(params: {
     value: "opencode-zen",
     label: "OpenCode Zen (multi-model proxy)",
     hint: "Claude, GPT, Gemini via opencode.ai/zen",
+  });
+  options.push({
+    value: "ollama-api-key",
+    label: "Ollama (local/remote)",
+    hint: "Run open-source models locally or connect to remote Ollama",
   });
   options.push({ value: "minimax-api", label: "MiniMax M2.1" });
   options.push({

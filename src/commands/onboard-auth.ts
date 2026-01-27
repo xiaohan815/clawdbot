@@ -39,6 +39,7 @@ export {
   setKimiCodeApiKey,
   setMinimaxApiKey,
   setMoonshotApiKey,
+  setOllamaApiKey,
   setOpencodeZenApiKey,
   setOpenrouterApiKey,
   setSyntheticApiKey,

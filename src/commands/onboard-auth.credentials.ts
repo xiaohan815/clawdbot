@@ -164,3 +164,17 @@ export async function setOpencodeZenApiKey(key: string, agentDir?: string) {
     agentDir: resolveAuthAgentDir(agentDir),
   });
 }
+
+export async function setOllamaApiKey(key: string, agentDir?: string) {
+  // Ollama doesn't require a real API key, but we use this to enable the provider.
+  // Any non-empty value works (e.g., "ollama-local").
+  upsertAuthProfile({
+    profileId: "ollama:default",
+    credential: {
+      type: "api_key",
+      provider: "ollama",
+      key,
+    },
+    agentDir: resolveAuthAgentDir(agentDir),
+  });
+}
