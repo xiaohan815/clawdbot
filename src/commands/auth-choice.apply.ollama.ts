@@ -1,5 +1,5 @@
 import { resolveEnvApiKey } from "../agents/model-auth.js";
-import type { ClawdbotConfig } from "../config/config.js";
+import type { MoltbotConfig } from "../config/config.js";
 import { formatApiKeyPreview, normalizeApiKeyInput } from "./auth-choice.api-key.js";
 import type { ApplyAuthChoiceParams, ApplyAuthChoiceResult } from "./auth-choice.apply.js";
 import { applyAuthProfileConfig } from "./onboard-auth.js";
@@ -32,7 +32,7 @@ function validateOllamaBaseUrl(value: string): string | undefined {
 /**
  * 将 Ollama 配置应用到配置对象
  */
-function applyOllamaProviderConfig(config: ClawdbotConfig, baseUrl?: string): ClawdbotConfig {
+function applyOllamaProviderConfig(config: MoltbotConfig, baseUrl?: string): MoltbotConfig {
   // 如果没有指定 baseUrl，不需要设置 provider（自动发现会生效）
   if (!baseUrl) {
     return config;
@@ -61,7 +61,7 @@ function applyOllamaProviderConfig(config: ClawdbotConfig, baseUrl?: string): Cl
 /**
  * 设置 Ollama 为默认模型
  */
-function applyOllamaDefaultModel(config: ClawdbotConfig, model: string): ClawdbotConfig {
+function applyOllamaDefaultModel(config: MoltbotConfig, model: string): MoltbotConfig {
   return {
     ...config,
     agents: {
