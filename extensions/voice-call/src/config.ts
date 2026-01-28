@@ -67,6 +67,22 @@ export const PlivoConfigSchema = z
   .strict();
 export type PlivoConfig = z.infer<typeof PlivoConfigSchema>;
 
+export const AliyunConfigSchema = z
+  .object({
+  /** 阿里云 AccessKey ID */
+  accessKeyId: z.string().min(1).optional(),
+  /** 阿里云 AccessKey Secret */
+  accessKeySecret: z.string().min(1).optional(),
+  /** 区域 ID (默认: cn-hangzhou) */
+  regionId: z.string().min(1).optional(),
+  /** API 端点 (默认: dyvmsapi.{regionId}.aliyuncs.com) */
+  endpoint: z.string().min(1).optional(),
+  /** TTS 模板代码（需要在阿里云控制台配置） */
+  ttsCode: z.string().min(1).optional(),
+})
+  .strict();
+export type AliyunConfig = z.infer<typeof AliyunConfigSchema>;
+
 // -----------------------------------------------------------------------------
 // STT/TTS Configuration
 // -----------------------------------------------------------------------------
@@ -296,8 +312,8 @@ export const VoiceCallConfigSchema = z
   /** Enable voice call functionality */
   enabled: z.boolean().default(false),
 
-  /** Active provider (telnyx, twilio, plivo, or mock) */
-  provider: z.enum(["telnyx", "twilio", "plivo", "mock"]).optional(),
+  /** Active provider (telnyx, twilio, plivo, aliyun, or mock) */
+  provider: z.enum(["telnyx", "twilio", "plivo", "aliyun", "mock"]).optional(),
 
   /** Telnyx-specific configuration */
   telnyx: TelnyxConfigSchema.optional(),
@@ -307,6 +323,9 @@ export const VoiceCallConfigSchema = z
 
   /** Plivo-specific configuration */
   plivo: PlivoConfigSchema.optional(),
+
+  /** 阿里云语音服务配置 */
+  aliyun: AliyunConfigSchema.optional(),
 
   /** Phone number to call from (E.164) */
   fromNumber: E164Schema.optional(),
@@ -421,6 +440,17 @@ export function resolveVoiceCallConfig(config: VoiceCallConfig): VoiceCallConfig
       resolved.plivo.authToken ?? process.env.PLIVO_AUTH_TOKEN;
   }
 
+  // Aliyun (阿里云)
+  if (resolved.provider === "aliyun") {
+    resolved.aliyun = resolved.aliyun ?? {};
+    resolved.aliyun.accessKeyId =
+      resolved.aliyun.accessKeyId ?? process.env.ALIYUN_ACCESS_KEY_ID;
+    resolved.aliyun.accessKeySecret =
+      resolved.aliyun.accessKeySecret ?? process.env.ALIYUN_ACCESS_KEY_SECRET;
+    resolved.aliyun.regionId =
+      resolved.aliyun.regionId ?? process.env.ALIYUN_REGION_ID ?? "cn-hangzhou";
+  }
+
   // Tunnel Config
   resolved.tunnel = resolved.tunnel ?? {
     provider: "none",
@@ -494,6 +524,19 @@ export function validateProviderConfig(config: VoiceCallConfig): {
     if (!config.plivo?.authToken) {
       errors.push(
         "plugins.entries.voice-call.config.plivo.authToken is required (or set PLIVO_AUTH_TOKEN env)",
+      );
+    }
+  }
+
+  if (config.provider === "aliyun") {
+    if (!config.aliyun?.accessKeyId) {
+      errors.push(
+        "plugins.entries.voice-call.config.aliyun.accessKeyId is required (or set ALIYUN_ACCESS_KEY_ID env)",
+      );
+    }
+    if (!config.aliyun?.accessKeySecret) {
+      errors.push(
+        "plugins.entries.voice-call.config.aliyun.accessKeySecret is required (or set ALIYUN_ACCESS_KEY_SECRET env)",
       );
     }
   }

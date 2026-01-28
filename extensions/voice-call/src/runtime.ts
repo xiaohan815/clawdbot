@@ -3,6 +3,7 @@ import type { VoiceCallConfig } from "./config.js";
 import { resolveVoiceCallConfig, validateProviderConfig } from "./config.js";
 import { CallManager } from "./manager.js";
 import type { VoiceCallProvider } from "./providers/base.js";
+import { AliyunProvider } from "./providers/aliyun.js";
 import { MockProvider } from "./providers/mock.js";
 import { PlivoProvider } from "./providers/plivo.js";
 import { TelnyxProvider } from "./providers/telnyx.js";
@@ -78,6 +79,23 @@ function resolveProvider(config: VoiceCallConfig): VoiceCallProvider {
           publicUrl: config.publicUrl,
           skipVerification: config.skipSignatureVerification,
           ringTimeoutSec: Math.max(1, Math.floor(config.ringTimeoutMs / 1000)),
+        },
+      );
+    case "aliyun":
+      return new AliyunProvider(
+        {
+          accessKeyId: config.aliyun?.accessKeyId,
+          accessKeySecret: config.aliyun?.accessKeySecret,
+          regionId: config.aliyun?.regionId,
+          endpoint: config.aliyun?.endpoint,
+          ttsCode: config.aliyun?.ttsCode,
+        },
+        {
+          publicUrl: config.publicUrl,
+          skipVerification: config.skipSignatureVerification,
+          streamPath: config.streaming?.enabled
+            ? config.streaming.streamPath
+            : undefined,
         },
       );
     case "mock":
